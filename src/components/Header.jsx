@@ -38,6 +38,8 @@ export default function Header() {
                 borderColor: 'primary.dark',
               },
               padding: '8px 16px',
+              width: '85px',
+              Height: '33px',
             }}
             onClick={handleLogout} 
           >
@@ -57,6 +59,8 @@ export default function Header() {
                 borderColor: 'primary.dark',
               },
               padding: '8px 16px',
+              width: '85px',
+              height: '33px'
             }}
             onClick={handleOpenModal} 
           >
