@@ -49,6 +49,7 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
     boxShadow: 24,
     borderRadius: '14px',
   };
+
   const ModalTitle = {
     bgcolor: '#ff8e34',
     borderTopLeftRadius: '14px',
@@ -63,6 +64,7 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
     width: '100%',
     gap: '4px',
   };
+
   const baseButtonStyles = {
     width: '130px',
     height: '34px',
@@ -74,13 +76,13 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
     fontSize: '18px',
     textTransform: 'capitalize',
   };
-  
+
   const SubmitButton = {
     ...baseButtonStyles,
     bgcolor: '#ff8e34',
     color: 'white',
   };
-  
+
   const CancelButton = {
     ...baseButtonStyles,
     bgcolor: 'white',
@@ -113,7 +115,7 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.firstName || !formData.lastName || !formData.phone || !formData.email) {
@@ -129,19 +131,44 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
       return;
     }
 
-    setReservedSlots((prevReservedSlots) => [
-      ...prevReservedSlots,
-      {
-        date: formData.date,
-        time: formData.time,
-        email: formData.email,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-      },
-    ]);
+    // Préparer les données à envoyer
+    const reservationData = {
+      date: formData.date,
+      time: formData.time,
+      email: formData.email,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      phone: formData.phone,
+    };
 
-    handleModalClose();
+    try {
+      // Envoi des données au serveur via fetch
+      const response = await fetch('http://localhost:3001/reservations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reservationData),
+      });
+
+      if (response.ok) {
+        // Si la requête est réussie, on ajoute la réservation à l'état
+        const data = await response.json();
+        
+        setReservedSlots((prevReservedSlots) => [
+          ...prevReservedSlots,
+          data, // On peut ajouter la réponse si nécessaire
+        ]);
+        
+        alert('Reservation successful!');
+        handleModalClose();
+      } else {
+        alert('Failed to submit reservation. Please try again later.');
+      }
+    } catch (error) {
+      console.error('Error submitting reservation:', error);
+      alert('There was an error. Please try again.');
+    }
   };
 
   const handleModalClose = () => {
@@ -161,118 +188,116 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
   };
 
   return (
-    <>
-      <Modal
-        open={open}
-        onClose={handleModalClose}
-        aria-labelledby="modal-title"
-        aria-describedby="modal-description"
-      >
-        <Box sx={modalStyle}>
-          <Box>
-            <Box sx={ModalTitle}>
-              <Typography id="modal-title" variant="h5" component="h2" sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <AssignmentIcon />
-                SLOT DETAILS
+    <Modal
+      open={open}
+      onClose={handleModalClose}
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
+    >
+      <Box sx={modalStyle}>
+        <Box>
+          <Box sx={ModalTitle}>
+            <Typography id="modal-title" variant="h5" component="h2" sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <AssignmentIcon />
+              SLOT DETAILS
+            </Typography>
+          </Box>
+          {admin ? (
+            <Box p={2}>
+              <Typography variant="body1">
+                <CalendarTodayIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }}/> {formData.date}
+              </Typography>
+              <Typography variant="body1" mt={1}>
+                <WatchLaterIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }} /> : {formData.time}
+              </Typography>
+              <Typography variant="body1" mt={2}>
+                <strong>First Name :</strong> {formData.firstName || 'Not specified'}
+              </Typography>
+              <Typography variant="body1" mt={1}>
+                <strong>Last Name :</strong> {formData.lastName || 'Not specified'}
+              </Typography>
+              <Typography variant="body1" mt={1}>
+                <strong>Phone Number :</strong> {formData.phone || 'Not specified'}
+              </Typography>
+              <Typography variant="body1" mt={1}>
+                <strong>Email :</strong> {formData.email || 'Not specified'}
               </Typography>
             </Box>
-            {admin ? (
-              <Box p={2}>
+          ) : (
+            <Box component="form" onSubmit={handleSubmit} p={2}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '26px' }}>
                 <Typography variant="body1">
                   <CalendarTodayIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }}/> {formData.date}
                 </Typography>
-                <Typography variant="body1" mt={1}>
-                  <WatchLaterIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }} /> : {formData.time}
-                </Typography>
-                <Typography variant="body1" mt={2}>
-                  <strong>First Name :</strong> {formData.firstName || 'Not specified'}
-                </Typography>
-                <Typography variant="body1" mt={1}>
-                  <strong>Last Name :</strong> {formData.lastName || 'Not specified'}
-                </Typography>
-                <Typography variant="body1" mt={1}>
-                  <strong>Phone Number :</strong> {formData.phone || 'Not specified'}
-                </Typography>
-                <Typography variant="body1" mt={1}>
-                  <strong>Email :</strong> {formData.email || 'Not specified'}
+                <Typography variant="body1">
+                  <WatchLaterIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }} /> {formData.time}
                 </Typography>
               </Box>
-            ) : (
-              <Box component="form" onSubmit={handleSubmit} p={2}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '26px' }}>
-                  <Typography variant="body1">
-                    <CalendarTodayIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }}/> {formData.date}
-                  </Typography>
-                  <Typography variant="body1">
-                    <WatchLaterIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }} /> {formData.time}
-                  </Typography>
-                </Box>
-                <Grid container columnSpacing={4} p={1}>
-                  <Grid item sm={6} xs={12}>
-                    <TextField
-                      label="First Name"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      fullWidth
-                      margin="normal"
-                      required
-                      sx={textFieldStyles}
-                    />
-                  </Grid>
-                  <Grid item sm={6} xs={12}>
-                    <TextField
-                      label="Last Name"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      fullWidth
-                      margin="normal"
-                      required
-                      sx={textFieldStyles}
-                    />
-                  </Grid>
-                  <Grid item sm={6} xs={12}>
-                    <TextField
-                      label="Phone Number"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      fullWidth
-                      margin="normal"
-                      required
-                      inputProps={{ pattern: '[0-9]+' }}
-                      sx={textFieldStyles}
-                    />
-                  </Grid>
-                  <Grid item sm={6} xs={12}>
-                    <TextField
-                      label="Email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      fullWidth
-                      margin="normal"
-                      required
-                      type="email"
-                      sx={textFieldStyles}
-                    />
-                  </Grid>
+              <Grid container columnSpacing={4} p={1}>
+                <Grid item sm={6} xs={12}>
+                  <TextField
+                    label="First Name"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                    sx={textFieldStyles}
+                  />
                 </Grid>
-                
-                <Box sx={{ display: 'flex', alignItems: 'center',justifyContent: 'center', gap: '16px', marginBottom: '16px', marginTop: '16px' }}>                  <Button onClick={handleCancel} variant="contained" sx={CancelButton}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" variant="contained" sx={SubmitButton}>
-                    Submit
-                  </Button>
-                </Box>
+                <Grid item sm={6} xs={12}>
+                  <TextField
+                    label="Last Name"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                    sx={textFieldStyles}
+                  />
+                </Grid>
+                <Grid item sm={6} xs={12}>
+                  <TextField
+                    label="Phone Number"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                    inputProps={{ pattern: '[0-9]+' }}
+                    sx={textFieldStyles}
+                  />
+                </Grid>
+                <Grid item sm={6} xs={12}>
+                  <TextField
+                    label="Email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                    type="email"
+                    sx={textFieldStyles}
+                  />
+                </Grid>
+              </Grid>
+              <Box sx={{ display: 'flex', alignItems: 'center',justifyContent: 'center', gap: '16px', marginBottom: '16px', marginTop: '16px' }}>
+                <Button onClick={handleCancel} variant="contained" sx={CancelButton}>
+                  Cancel
+                </Button>
+                <Button type="submit" variant="contained" sx={SubmitButton}>
+                  Submit
+                </Button>
               </Box>
-            )}
-          </Box>
+            </Box>
+          )}
         </Box>
-      </Modal>
-    </>
+      </Box>
+    </Modal>
   );
 };
 

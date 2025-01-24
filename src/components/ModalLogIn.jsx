@@ -3,11 +3,12 @@ import { Modal, Box, Button, TextField, Snackbar } from '@mui/material';
 import { AppContext } from '../context/context';
 
 const ModalLogIn = ({ open, handleCloseModal }) => {
-  const { setAdmin, SECRETCODE } = useContext(AppContext);
-  const [error, setError] = useState(false);  
+  const { setAdmin } = useContext(AppContext);
+  const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
-    adminCode: '',
+    email: '',
+    password: '',
   });
 
   const modalStyle = {
@@ -25,19 +26,35 @@ const ModalLogIn = ({ open, handleCloseModal }) => {
 
   const resetForm = () => {
     setFormData({
-      adminCode: '', 
+      email: '',
+      password: '',
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); 
-    if(formData.adminCode === SECRETCODE) {
-        setAdmin(true);  
-        handleCloseModal();  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:3001/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      console.log(result.admin)
+
+      if (response.ok) {
+        setAdmin(result.admin);
+        handleCloseModal();
         resetForm();
-    } else {
-        setError(true);  
-        setErrorMessage('Code incorrect. Veuillez réessayer.');
+      } else {
+        setError(true);
+        console.log(result.msg || 'Erreur lors de la connexion. Veuillez réessayer.');
+      }
+    } catch (err) {
+      console.error('Erreur:', err);
+      setError(true);
+      setErrorMessage('Erreur de réseau. Veuillez réessayer.');
     }
   };
 
@@ -54,7 +71,7 @@ const ModalLogIn = ({ open, handleCloseModal }) => {
   };
 
   const handleCloseError = () => {
-    setError(false);  
+    setError(false);
   };
 
   return (
@@ -68,20 +85,20 @@ const ModalLogIn = ({ open, handleCloseModal }) => {
         <Box sx={modalStyle}>
           <Box component="form" onSubmit={handleSubmit} mt={3}>
             <TextField
-              label="Mail Admin"
-              name="adminMail"
-              type="text"
-              value={formData.adminCode}
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
               onChange={handleChange}
               fullWidth
               required
               sx={{ mb: 2 }}
             />
             <TextField
-              label="Code Admin"
-              name="adminCode"
+              label="Mot de passe"
+              name="password"
               type="password"
-              value={formData.adminCode}
+              value={formData.password}
               onChange={handleChange}
               fullWidth
               required
