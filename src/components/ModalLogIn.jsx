@@ -68,6 +68,16 @@ const ModalLogIn = ({ open, handleCloseModal }) => {
         <Box sx={modalStyle}>
           <Box component="form" onSubmit={handleSubmit} mt={3}>
             <TextField
+              label="Mail Admin"
+              name="adminMail"
+              type="text"
+              value={formData.adminCode}
+              onChange={handleChange}
+              fullWidth
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
               label="Code Admin"
               name="adminCode"
               type="password"

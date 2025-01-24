@@ -21,12 +21,23 @@ export default function Header() {
   };
 
   return (
-    <AppBar position="static" color="primary">
-      <Toolbar>
+    <AppBar 
+      position="static" 
+      sx={{ 
+        backgroundColor: 'white' ,
+        borderBottomLeftRadius: '14px',
+        borderBottomRightRadius: '14px',
+      }}
+    >
+      <Toolbar 
+        sx={{ 
+          backgroundColor: '#ff8e34',
+          borderBottomLeftRadius: '14px',
+          borderBottomRightRadius: '14px',
+       }}>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Calendar
         </Typography>
-        {admin ? (
           <Button
             sx={{
               backgroundColor: 'white',
@@ -41,34 +52,12 @@ export default function Header() {
               width: '85px',
               Height: '33px',
             }}
-            onClick={handleLogout} 
+            onClick={admin ? handleLogout : handleOpenModal} 
           >
             <Typography variant="h6" sx={{ color: 'inherit' }}>
-              Logout
+              {admin ? "Logout" : "Admin"}
             </Typography>
           </Button>
-        ) : (
-          <Button
-            sx={{
-              backgroundColor: 'white',
-              color: 'primary.main',
-              border: '2px solid white',
-              borderRadius: '8px',
-              '&:hover': {
-                backgroundColor: 'primary.dark',
-                borderColor: 'primary.dark',
-              },
-              padding: '8px 16px',
-              width: '85px',
-              height: '33px'
-            }}
-            onClick={handleOpenModal} 
-          >
-            <Typography variant="h6" sx={{ color: 'inherit' }}>
-              Admin
-            </Typography>
-          </Button>
-        )}
       </Toolbar>
       <ModalLogIn open={isModalOpen} handleCloseModal={handleCloseModal} />
     </AppBar>

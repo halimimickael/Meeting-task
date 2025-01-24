@@ -4,6 +4,7 @@
     import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
     import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
     import { AppContext } from '../context/context';
+import { Box } from '@mui/material';
 
     const Calendar = () => {
     const { selectDate, setSelectDate } = useContext(AppContext);
@@ -17,16 +18,27 @@
     }, [setSelectDate]);
 
     return (
-        <div>
+        <Box marginTop={1}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <StaticDatePicker
                 sx={{
                     '.MuiPickersLayout-actionBar': {
                       display: 'none',
                     },
+                    '.MuiPickersDay-root.Mui-selected': {
+                        backgroundColor: '#ff8e34',
+                        color: '#fff',
+                    },
+                    '.MuiPickersDay-root.Mui-selected:hover': {
+                        backgroundColor: '#ff8e34',
+                        color: '#fff',
+                    },
+                    "& .MuiDayCalendar-weekDayLabel": {
+                        color: "#ff8e34",
+                    },
                   }}
                     variant='static'
-                    orientation='desktop'
+                    orientation="portrait"
                     value={selectDate}
                     minDate={new Date()} 
                     maxDate={new Date(new Date().getFullYear() + 10, new Date().getMonth() + 11, 0)} 
@@ -38,7 +50,7 @@
                     }}
                 />
             </LocalizationProvider>
-        </div>
+        </Box>
     );
     };
 

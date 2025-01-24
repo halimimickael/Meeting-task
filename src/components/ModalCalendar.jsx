@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Modal, Box, Typography, TextField, Button } from '@mui/material';
+import { Modal, Box, Typography, TextField, Button, Grid } from '@mui/material';
 import { AppContext } from '../context/context';
 import { useTheme, useMediaQuery } from '@mui/material';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 const ModalCalendar = ({ open, handleCloseModal, item }) => {
   const { selectDate, admin, reservedSlots, setReservedSlots } = useContext(AppContext);
@@ -45,7 +48,64 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
     bgcolor: 'background.paper',
     boxShadow: 24,
     borderRadius: '14px',
-    p: 4,
+  };
+  const ModalTitle = {
+    bgcolor: '#ff8e34',
+    borderTopLeftRadius: '14px',
+    borderTopRightRadius: '14px',
+    color: 'white',
+    height: '45px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: '16px',
+    fontWeight: '600',
+    width: '100%',
+    gap: '4px',
+  };
+  const baseButtonStyles = {
+    width: '130px',
+    height: '34px',
+    borderRadius: '8px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontWeight: 600,
+    fontSize: '18px',
+    textTransform: 'capitalize',
+  };
+  
+  const SubmitButton = {
+    ...baseButtonStyles,
+    bgcolor: '#ff8e34',
+    color: 'white',
+  };
+  
+  const CancelButton = {
+    ...baseButtonStyles,
+    bgcolor: 'white',
+    color: 'red',
+    border: '2px solid red',
+  };
+
+  const textFieldStyles = {
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: '#ff8e34', 
+      },
+      '&:hover fieldset': {
+        borderColor: '#ff8e34', 
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#ff8e34', 
+      },
+    },
+    '& .MuiInputLabel-root': {
+      color: '#adadad', 
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: '#adadad', 
+    },
   };
 
   const handleInputChange = (e) => {
@@ -96,91 +156,123 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
     handleCloseModal();
   };
 
+  const handleCancel = () => {
+    handleModalClose();
+  };
+
   return (
-    <Modal
-      open={open}
-      onClose={handleModalClose}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-    >
-      <Box sx={modalStyle}>
-        <Typography id="modal-title" variant="h6" component="h2" mb={2}>
-          Slot details
-        </Typography>
-        {admin ? (
-          <Box mt={2}>
-            <Typography variant="body1">
-              <strong>Date :</strong> {formData.date}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Hour :</strong> {formData.time}
-            </Typography>
-            <Typography variant="body1" mt={2}>
-              <strong>First Name :</strong> {formData.firstName || 'Not specified'}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Last Name :</strong> {formData.lastName || 'Not specified'}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Phone Number :</strong> {formData.phone || 'Not specified'}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Email :</strong> {formData.email || 'Not specified'}
-            </Typography>
+    <>
+      <Modal
+        open={open}
+        onClose={handleModalClose}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box sx={modalStyle}>
+          <Box>
+            <Box sx={ModalTitle}>
+              <Typography id="modal-title" variant="h5" component="h2" sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <AssignmentIcon />
+                SLOT DETAILS
+              </Typography>
+            </Box>
+            {admin ? (
+              <Box p={2}>
+                <Typography variant="body1">
+                  <CalendarTodayIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }}/> {formData.date}
+                </Typography>
+                <Typography variant="body1" mt={1}>
+                  <WatchLaterIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }} /> : {formData.time}
+                </Typography>
+                <Typography variant="body1" mt={2}>
+                  <strong>First Name :</strong> {formData.firstName || 'Not specified'}
+                </Typography>
+                <Typography variant="body1" mt={1}>
+                  <strong>Last Name :</strong> {formData.lastName || 'Not specified'}
+                </Typography>
+                <Typography variant="body1" mt={1}>
+                  <strong>Phone Number :</strong> {formData.phone || 'Not specified'}
+                </Typography>
+                <Typography variant="body1" mt={1}>
+                  <strong>Email :</strong> {formData.email || 'Not specified'}
+                </Typography>
+              </Box>
+            ) : (
+              <Box component="form" onSubmit={handleSubmit} p={2}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '26px' }}>
+                  <Typography variant="body1">
+                    <CalendarTodayIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }}/> {formData.date}
+                  </Typography>
+                  <Typography variant="body1">
+                    <WatchLaterIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }} /> {formData.time}
+                  </Typography>
+                </Box>
+                <Grid container columnSpacing={4} p={1}>
+                  <Grid item sm={6} xs={12}>
+                    <TextField
+                      label="First Name"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      fullWidth
+                      margin="normal"
+                      required
+                      sx={textFieldStyles}
+                    />
+                  </Grid>
+                  <Grid item sm={6} xs={12}>
+                    <TextField
+                      label="Last Name"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      fullWidth
+                      margin="normal"
+                      required
+                      sx={textFieldStyles}
+                    />
+                  </Grid>
+                  <Grid item sm={6} xs={12}>
+                    <TextField
+                      label="Phone Number"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      fullWidth
+                      margin="normal"
+                      required
+                      inputProps={{ pattern: '[0-9]+' }}
+                      sx={textFieldStyles}
+                    />
+                  </Grid>
+                  <Grid item sm={6} xs={12}>
+                    <TextField
+                      label="Email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      fullWidth
+                      margin="normal"
+                      required
+                      type="email"
+                      sx={textFieldStyles}
+                    />
+                  </Grid>
+                </Grid>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center',justifyContent: 'center', gap: '16px', marginBottom: '16px', marginTop: '16px' }}>                  <Button onClick={handleCancel} variant="contained" sx={CancelButton}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="contained" sx={SubmitButton}>
+                    Submit
+                  </Button>
+                </Box>
+              </Box>
+            )}
           </Box>
-        ) : (
-          <Box component="form" onSubmit={handleSubmit} mt={3}>
-            <Typography variant="body1">
-              <strong>Date :</strong> {formData.date}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Hour :</strong> {formData.time}
-            </Typography>
-            <TextField
-              label="First Name"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              required
-            />
-            <TextField
-              label="Last Name"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              required
-            />
-            <TextField
-              label="Phone Number"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              required
-              inputProps={{ pattern: '[0-9]+' }}
-            />
-            <TextField
-              label="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              required
-              type="email"
-            />
-            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-              Submit
-            </Button>
-          </Box>
-        )}
-      </Box>
-    </Modal>
+        </Box>
+      </Modal>
+    </>
   );
 };
 
