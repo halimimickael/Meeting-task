@@ -10,7 +10,7 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
   const { selectDate, admin, reservedSlots, setReservedSlots } = useContext(AppContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
-
+  console.log("reservedSlots", reservedSlots)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -131,7 +131,6 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
       return;
     }
 
-    // Préparer les données à envoyer
     const reservationData = {
       date: formData.date,
       time: formData.time,
@@ -142,7 +141,6 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
     };
 
     try {
-      // Envoi des données au serveur via fetch
       const response = await fetch('http://localhost:3001/reservations', {
         method: 'POST',
         headers: {
@@ -152,12 +150,11 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
       });
 
       if (response.ok) {
-        // Si la requête est réussie, on ajoute la réservation à l'état
         const data = await response.json();
         
         setReservedSlots((prevReservedSlots) => [
           ...prevReservedSlots,
-          data, // On peut ajouter la réponse si nécessaire
+          data, 
         ]);
         
         alert('Reservation successful!');

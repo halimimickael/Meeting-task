@@ -10,6 +10,25 @@ export default function ContextProvider({ children }) {
         return savedReservedSlots ? JSON.parse(savedReservedSlots) : [];
     });
     const [admin, setAdmin] = useState(false);
+    
+    useEffect(() => {
+        const fetchReservedSlots = async () => {
+          try {
+            const response = await fetch('http://localhost:3001/reservations');
+            if (!response.ok) {
+              throw new Error('Failed to fetch reservations');
+            }
+            const data = await response.json();
+            console.log('Fetched data:', data);
+            setReservedSlots(data);
+          } catch (error) {
+            console.error('Error fetching reservations:', error);
+          }
+        };
+      
+        fetchReservedSlots();
+      }, [selectDate]);
+      
 
     useEffect(() => {
         localStorage.setItem('reservedSlots', JSON.stringify(reservedSlots));
