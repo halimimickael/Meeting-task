@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Modal, Box, Typography, TextField, Button, Grid } from '@mui/material';
 import { AppContext } from '../context/context';
 import { useTheme, useMediaQuery } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { CancelButton, modalStyle, ModalTitle, SubmitButton, textFieldStyles } from './styles';
 
 const ModalCalendar = ({ open, handleCloseModal, item }) => {
   const { selectDate, admin, reservedSlots, setReservedSlots } = useContext(AppContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
-  console.log("reservedSlots", reservedSlots)
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -38,82 +39,11 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
     }
   }, [item, selectDate, reservedSlots]);
 
-  const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: isMobile ? '270px' : '600px', 
-    maxWidth: '95%',
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    borderRadius: '14px',
-  };
 
-  const ModalTitle = {
-    bgcolor: '#ff8e34',
-    borderTopLeftRadius: '14px',
-    borderTopRightRadius: '14px',
-    color: 'white',
-    height: '45px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: '16px',
-    fontWeight: '600',
-    width: '100%',
-    gap: '4px',
-  };
-
-  const baseButtonStyles = {
-    width: '130px',
-    height: '34px',
-    borderRadius: '8px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontWeight: 600,
-    fontSize: '18px',
-    textTransform: 'capitalize',
-  };
-
-  const SubmitButton = {
-    ...baseButtonStyles,
-    bgcolor: '#ff8e34',
-    color: 'white',
-  };
-
-  const CancelButton = {
-    ...baseButtonStyles,
-    bgcolor: 'white',
-    color: 'red',
-    border: '2px solid red',
-  };
-
-  const textFieldStyles = {
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#ff8e34', 
-      },
-      '&:hover fieldset': {
-        borderColor: '#ff8e34', 
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#ff8e34', 
-      },
-    },
-    '& .MuiInputLabel-root': {
-      color: '#adadad', 
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: '#adadad', 
-    },
-  };
-
-  const handleInputChange = (e) => {
+  const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -168,7 +98,7 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
     }
   };
 
-  const handleModalClose = () => {
+  const handleModalClose = useCallback(() => {
     setFormData({
       firstName: '',
       lastName: '',
@@ -178,11 +108,11 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
       time: '',
     });
     handleCloseModal();
-  };
+  }, [handleCloseModal]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     handleModalClose();
-  };
+  }, [handleModalClose]);
 
   return (
     <Modal
@@ -191,7 +121,7 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
     >
-      <Box sx={modalStyle}>
+      <Box sx={modalStyle(isMobile)}>
         <Box>
           <Box sx={ModalTitle}>
             <Typography id="modal-title" variant="h5" component="h2" sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -200,26 +130,37 @@ const ModalCalendar = ({ open, handleCloseModal, item }) => {
             </Typography>
           </Box>
           {admin ? (
-            <Box p={2}>
-              <Typography variant="body1">
-                <CalendarTodayIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }}/> {formData.date}
-              </Typography>
-              <Typography variant="body1" mt={1}>
-                <WatchLaterIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }} /> : {formData.time}
-              </Typography>
-              <Typography variant="body1" mt={2}>
-                <strong>First Name :</strong> {formData.firstName || 'Not specified'}
-              </Typography>
-              <Typography variant="body1" mt={1}>
-                <strong>Last Name :</strong> {formData.lastName || 'Not specified'}
-              </Typography>
-              <Typography variant="body1" mt={1}>
-                <strong>Phone Number :</strong> {formData.phone || 'Not specified'}
-              </Typography>
-              <Typography variant="body1" mt={1}>
-                <strong>Email :</strong> {formData.email || 'Not specified'}
-              </Typography>
-            </Box>
+            <Box p={3} sx={{ borderRadius: 2, boxShadow: 3, backgroundColor: '#f9f9f9' }}>
+              <Box display={'flex'} gap={3}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }} display={'flex'} alignItems={'center'}>
+                  <CalendarTodayIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }} /> 
+                  {formData.date}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }} display={'flex'} alignItems={'center'}>
+                  <WatchLaterIcon sx={{ color: '#ff8e34', verticalAlign: 'middle' }} /> 
+                  {formData.time}
+                </Typography>
+                </Box>
+            
+              <Box sx={{ borderTop: '1px solid #ddd', mt: 2, pt: 2 }}>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>First Name :</strong> {formData.firstName || 'Not specified'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Last Name :</strong> {formData.lastName || 'Not specified'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Phone Number :</strong> {formData.phone || 'Not specified'}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  <strong>Email :</strong> {formData.email || 'Not specified'}
+                </Typography>
+              </Box>
+              <Button onClick={handleCancel} variant="contained" sx={CancelButton}>
+                  Cancel
+              </Button>
+          </Box>
+          
           ) : (
             <Box component="form" onSubmit={handleSubmit} p={2}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '26px' }}>

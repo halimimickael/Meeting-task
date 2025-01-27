@@ -3,13 +3,12 @@ import { createContext, useState, useEffect } from "react";
 export const AppContext = createContext(null);
 
 export default function ContextProvider({ children }) {
-    const SECRETCODE = '12345';
     const [selectDate, setSelectDate] = useState(new Date());
+    const [admin, setAdmin] = useState(false);
     const [reservedSlots, setReservedSlots] = useState(() => {
         const savedReservedSlots = localStorage.getItem('reservedSlots');
         return savedReservedSlots ? JSON.parse(savedReservedSlots) : [];
     });
-    const [admin, setAdmin] = useState(false);
     
     useEffect(() => {
         const fetchReservedSlots = async () => {
@@ -19,7 +18,6 @@ export default function ContextProvider({ children }) {
               throw new Error('Failed to fetch reservations');
             }
             const data = await response.json();
-            console.log('Fetched data:', data);
             setReservedSlots(data);
           } catch (error) {
             console.error('Error fetching reservations:', error);
@@ -43,13 +41,12 @@ export default function ContextProvider({ children }) {
     }, [admin]);
 
     const globalVal = {
-        SECRETCODE,
         selectDate,
         setSelectDate,
+        admin,
+        setAdmin,
         reservedSlots,
         setReservedSlots,
-        admin,
-        setAdmin
     };
 
     return (

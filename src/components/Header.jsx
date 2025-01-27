@@ -40,17 +40,17 @@ export default function Header() {
         </Typography>
           <Button
             sx={{
-              backgroundColor: 'white',
-              color: 'primary.main',
+              color: 'white',
               border: '2px solid white',
               borderRadius: '8px',
               '&:hover': {
-                backgroundColor: 'primary.dark',
-                borderColor: 'primary.dark',
+                backgroundColor: 'white',
+                borderColor: '#ff8e34',
+                color: '#ff8e34',
               },
               padding: '8px 16px',
-              width: '85px',
-              Height: '33px',
+              width: '105px',
+              height: '33px',
             }}
             onClick={admin ? handleLogout : handleOpenModal} 
           >

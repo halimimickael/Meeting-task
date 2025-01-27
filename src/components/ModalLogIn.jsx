@@ -1,28 +1,18 @@
 import React, { useContext, useState } from 'react';
-import { Modal, Box, Button, TextField, Snackbar } from '@mui/material';
+import { Modal, Box, Button, TextField, Snackbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { AppContext } from '../context/context';
+import { modalStyle, ModalTitle, SubmitButton, textFieldStyles } from './styles';
 
 const ModalLogIn = ({ open, handleCloseModal }) => {
   const { setAdmin } = useContext(AppContext);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-
-  const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 600,
-    maxWidth: '95%',
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    borderRadius: '14px',
-    p: 4,
-  };
 
   const resetForm = () => {
     setFormData({
@@ -41,7 +31,6 @@ const ModalLogIn = ({ open, handleCloseModal }) => {
       });
 
       const result = await response.json();
-      console.log(result.admin)
 
       if (response.ok) {
         setAdmin(result.admin);
@@ -82,8 +71,13 @@ const ModalLogIn = ({ open, handleCloseModal }) => {
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <Box sx={modalStyle}>
-          <Box component="form" onSubmit={handleSubmit} mt={3}>
+        <Box sx={modalStyle(isMobile)}>
+          <Box sx={ModalTitle}>
+            <Typography id="modal-title" variant="h5" component="h2" sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              LOG IN
+            </Typography>
+          </Box>
+          <Box component="form" onSubmit={handleSubmit} p={3} display={'flex'} flexDirection={'column'} alignItems={'center'}>
             <TextField
               label="Email"
               name="email"
@@ -92,7 +86,7 @@ const ModalLogIn = ({ open, handleCloseModal }) => {
               onChange={handleChange}
               fullWidth
               required
-              sx={{ mb: 2 }}
+              sx={textFieldStyles(2)}
             />
             <TextField
               label="Mot de passe"
@@ -102,10 +96,10 @@ const ModalLogIn = ({ open, handleCloseModal }) => {
               onChange={handleChange}
               fullWidth
               required
-              sx={{ mb: 2 }}
-            />
-            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-              Soumettre
+              sx={textFieldStyles(2)}
+              />
+            <Button type="submit" variant="contained" sx={SubmitButton}>
+              Submit
             </Button>
           </Box>
         </Box>
