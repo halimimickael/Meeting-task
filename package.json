@@ -5,9 +5,8 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.3.0",
-    "@mui/material": "^5.16.14",
-    "@mui/x-date-pickers": "^6.20.2",
+    "@mui/material": "^6.4.2",
+    "@mui/x-date-pickers": "^7.25.0",
     "cra-template": "1.2.0",
     "date-fns": "2.29.3",
     "react": "^18.3.1",
